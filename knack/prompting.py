@@ -20,7 +20,8 @@ class NoTTYException(Exception):
     pass
 
 
-def _input(msg):
+def _input(msg, level='Normal'):
+    msg = _get_color_wrapper(level)(msg)
     return input(msg)
 
 
@@ -30,10 +31,10 @@ def verify_is_a_tty():
         raise NoTTYException()
 
 
-def prompt(msg, help_string=None):
+def prompt(msg, help_string=None, level='Normal'):
     verify_is_a_tty()
     while True:
-        val = _input(msg)
+        val = _input(msg, level)
         if val == '?' and help_string is not None:
             print(help_string)
             continue
@@ -129,3 +130,19 @@ def prompt_choice_list(msg, a_list, default=1, help_string=None):
             raise ValueError
         except ValueError:
             logger.warning('Valid values are %s', allowed_vals)
+
+
+def _get_color_wrapper(level):
+    import colorama
+
+    def _color_wrapper(color_marker):
+        def wrap_msg_with_color(msg):
+            return '{}{}{}'.format(color_marker, msg, colorama.Style.RESET_ALL)
+        return wrap_msg_with_color
+
+    COLOR_MAP = {
+        'Question': _color_wrapper(colorama.Fore.GREEN+colorama.Back.BLUE+'?'+colorama.Style.RESET_ALL+colorama.Fore.BLUE+colorama.Back.GREEN),
+        'Normal': _color_wrapper(''),
+    }
+
+    return COLOR_MAP.get(level, None)
