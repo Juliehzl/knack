@@ -97,7 +97,7 @@ def _prompt_bool(msg, true_str, false_str, default=None, help_string=None):
             return default == y.lower()
 
 
-def prompt_choice_list(msg, a_list, default=1, help_string=None):
+def prompt_choice_list(msg, a_list, default=1, help_string=None, level='Normal'):
     """Prompt user to select from a list of possible choices.
 
     :param msg:A message displayed to the user before the choice list
@@ -108,6 +108,7 @@ def prompt_choice_list(msg, a_list, default=1, help_string=None):
     :type default: int
     :returns: The list index of the item chosen.
     """
+    import colorama
     verify_is_a_tty()
     options = '\n'.join([' [{}] {}{}'
                          .format(i + 1,
@@ -116,7 +117,9 @@ def prompt_choice_list(msg, a_list, default=1, help_string=None):
                          for i, x in enumerate(a_list)])
     allowed_vals = list(range(1, len(a_list) + 1))
     while True:
-        val = _input('{}\n{}\nPlease enter a choice [Default choice({})]: '.format(msg, options, default))
+        colored_msg = '{}{}{}'.format(colorama.Fore.CYAN, msg, colorama.Style.RESET_ALL)
+        colored_default = '{}Please enter a choice [Default choice({})]:{}'.format(colorama.Fore.CYAN, default, colorama.Style.RESET_ALL)
+        val = _input('{}\n{}\n{}'.format(colored_msg, options, colored_default))
         if val == '?' and help_string is not None:
             print(help_string)
             continue
@@ -141,7 +144,7 @@ def _get_color_wrapper(level):
         return wrap_msg_with_color
 
     COLOR_MAP = {
-        'Question': _color_wrapper(colorama.Fore.GREEN+colorama.Back.BLUE+'?'+colorama.Style.RESET_ALL+colorama.Fore.BLUE+colorama.Back.GREEN),
+        'Question': _color_wrapper(colorama.Fore.CYAN),
         'Normal': _color_wrapper(''),
     }
 
