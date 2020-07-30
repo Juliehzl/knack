@@ -122,7 +122,7 @@ def prompt_choice_list(msg, a_list, default=1, help_string=None, level='Normal')
 
     allowed_vals = list(range(1, len(a_list) + 1))
     while True:
-        colored_msg = '{}{}{}'.format(colorama.Fore.LIGHTWHITE_EX, msg, colorama.Style.RESET_ALL)
+        colored_msg = '{}{}{}'.format(colorama.Fore.LIGHTCYAN_EX, msg, colorama.Style.RESET_ALL)
         colored_default = '{}Please enter a choice {}:{}'.format(
             colorama.Fore.LIGHTCYAN_EX,
             '{}{}{}'.format(colorama.Fore.LIGHTWHITE_EX + colorama.Back.LIGHTRED_EX,
