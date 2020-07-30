@@ -70,22 +70,22 @@ def prompt_pass(msg='Password: ', confirm=False, help_string=None):
         return password
 
 
-def prompt_y_n(msg, default=None, help_string=None):
-    return _prompt_bool(msg, 'y', 'n', default=default, help_string=help_string)
+def prompt_y_n(msg, default=None, help_string=None, level='Question'):
+    return _prompt_bool(msg, 'y', 'n', default=default, help_string=help_string, level='Question')
 
 
 def prompt_t_f(msg, default=None, help_string=None):
     return _prompt_bool(msg, 't', 'f', default=default, help_string=help_string)
 
 
-def _prompt_bool(msg, true_str, false_str, default=None, help_string=None):
+def _prompt_bool(msg, true_str, false_str, default=None, help_string=None, level='Question'):
     verify_is_a_tty()
     if default not in [None, true_str, false_str]:
         raise ValueError("Valid values for default are {}, {} or None".format(true_str, false_str))
     y = true_str.upper() if default == true_str else true_str
     n = false_str.upper() if default == false_str else false_str
     while True:
-        ans = _input('{} ({}/{}): '.format(msg, y, n))
+        ans = _input('{} ({}/{}): '.format(msg, y, n), level)
         if ans == '?' and help_string is not None:
             print(help_string)
             continue
@@ -110,15 +110,25 @@ def prompt_choice_list(msg, a_list, default=1, help_string=None, level='Normal')
     """
     import colorama
     verify_is_a_tty()
-    options = '\n'.join([' [{}] {}{}'
-                         .format(i + 1,
-                                 x['name'] if isinstance(x, dict) and 'name' in x else x,
-                                 ' - ' + x['desc'] if isinstance(x, dict) and 'desc' in x else '')
+
+    options = '\n'.join(['{}{}{}'
+                         .format('{}{}{}'.format(colorama.Fore.YELLOW, ' [{}] '.format(i + 1), colorama.Style.RESET_ALL),
+                                 x['name'] + '\n' if isinstance(x, dict) and 'name' in x else x,
+                                 '{}{}{}'.format(colorama.Fore.WHITE,
+                                                 ' - ' + x['desc'] if isinstance(x, dict) and 'desc' in x else '',
+                                                 colorama.Style.NORMAL)
+                                 )
                          for i, x in enumerate(a_list)])
+
     allowed_vals = list(range(1, len(a_list) + 1))
     while True:
-        colored_msg = '{}{}{}'.format(colorama.Fore.LIGHTCYAN_EX, msg, colorama.Style.RESET_ALL)
-        colored_default = '{}Please enter a choice [Default choice({})]:{}'.format(colorama.Fore.LIGHTCYAN_EX, default, colorama.Style.RESET_ALL)
+        colored_msg = '{}{}{}'.format(colorama.Fore.LIGHTWHITE_EX, msg, colorama.Style.RESET_ALL)
+        colored_default = '{}Please enter a choice {}:{}'.format(
+            colorama.Fore.LIGHTCYAN_EX,
+            '{}{}{}'.format(colorama.Fore.LIGHTWHITE_EX + colorama.Back.LIGHTRED_EX,
+                            '[Default choice({})]'.format(default),
+                            colorama.Style.RESET_ALL),
+            colorama.Style.RESET_ALL)
         val = _input('{}\n{}\n{}'.format(colored_msg, options, colored_default))
         if val == '?' and help_string is not None:
             print(help_string)
@@ -126,6 +136,7 @@ def prompt_choice_list(msg, a_list, default=1, help_string=None, level='Normal')
         if not val:
             val = '{}'.format(default)
         try:
+            print('\n')
             ans = int(val)
             if ans in allowed_vals:
                 # array index is 0-based, user input is 1-based
