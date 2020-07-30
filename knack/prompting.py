@@ -117,8 +117,8 @@ def prompt_choice_list(msg, a_list, default=1, help_string=None, level='Normal')
                          for i, x in enumerate(a_list)])
     allowed_vals = list(range(1, len(a_list) + 1))
     while True:
-        colored_msg = '{}{}{}'.format(colorama.Fore.CYAN, msg, colorama.Style.RESET_ALL)
-        colored_default = '{}Please enter a choice [Default choice({})]:{}'.format(colorama.Fore.CYAN, default, colorama.Style.RESET_ALL)
+        colored_msg = '{}{}{}'.format(colorama.Fore.LIGHTCYAN_EX, msg, colorama.Style.RESET_ALL)
+        colored_default = '{}Please enter a choice [Default choice({})]:{}'.format(colorama.Fore.LIGHTCYAN_EX, default, colorama.Style.RESET_ALL)
         val = _input('{}\n{}\n{}'.format(colored_msg, options, colored_default))
         if val == '?' and help_string is not None:
             print(help_string)
@@ -144,7 +144,7 @@ def _get_color_wrapper(level):
         return wrap_msg_with_color
 
     COLOR_MAP = {
-        'Question': _color_wrapper(colorama.Fore.CYAN),
+        'Question': _color_wrapper(colorama.Fore.LIGHTCYAN_EX),
         'Normal': _color_wrapper(''),
     }
 
